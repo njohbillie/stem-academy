@@ -17,7 +17,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # ── Docker build artifacts ─────────────────────────────────────────────
-*.tar.gz
+#*.tar.gz
 
 # ── Editor ────────────────────────────────────────────────────────────
 .vscode/
