@@ -1,0 +1,86 @@
+# ── STEM Academy — Docker Compose ─────────────────────────────────────────
+# Three-tier architecture:
+#   web  (nginx)  ──► api  (Node.js)  ──► db  (PostgreSQL)
+#
+# Networks:
+#   frontend-net  : web ↔ api   (web can reach api, not db)
+#   backend-net   : api ↔ db    (internal only — db is never exposed)
+#
+# Synology Container Manager + Nginx Proxy Manager deployment:
+#   1. Upload this folder to a Synology shared folder
+#      e.g.  /volume1/docker/stem-academy/
+#   2. Rename app.env.example → app.env and fill in all values
+#   3. Container Manager → Project → Create → point at the folder
+#      OR via SSH:  docker compose up -d
+#   4. In NPM → Proxy Hosts → Add Host:
+#        Domain:        stemacademy.yourdomain.com
+#        Scheme/Host:   http   web   80      ← "web" is the Docker service name
+#        SSL:           enable + Force SSL + HTTP/2
+#      NPM reaches "web" directly via the shared Docker network —
+#      no host port binding is required.
+# ──────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: ./app.env        # provides POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend-net
+    healthcheck:
+      test:     ["CMD", "pg_isready", "-q", "-U", "stemuser", "-d", "stemacademy"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+    # db is intentionally NOT in frontend-net — it is unreachable from the web
+
+  # ── Node.js API ───────────────────────────────────────────────────────
+  api:
+    image: stem-academy-api:1.0.1
+    restart: unless-stopped
+    env_file: ./app.env        # provides NODE_ENV, PORT, DATABASE_URL, JWT_*, ANTHROPIC_API_KEY, CORS_ORIGIN
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend-net
+      - frontend-net
+    expose:
+      - "3000"                 # only reachable from within frontend-net, not from the host
+
+  # ── nginx (static frontend + API reverse proxy) ───────────────────────
+  web:
+    image: stem-academy-web:1.0.1
+    restart: unless-stopped
+    # NPM reaches this container directly via the shared Docker network
+    # (no host-port binding needed).  Un-comment the line below only if
+    # you want to access the app directly without going through NPM
+    # (e.g. during local development or troubleshooting).
+    # ports:
+    #   - "8080:80"
+    depends_on:
+      - api
+    networks:
+      - frontend-net
+      - npm_network            # joins NPM's network so NPM can proxy to http://web:80
+
+# ── Volumes ───────────────────────────────────────────────────────────────
+volumes:
+  pgdata:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────
+networks:
+  backend-net:
+    driver: bridge
+    internal: true             # no outside internet access — db talks only to api
+  frontend-net:
+    driver: bridge
+  npm_network:
+    external: true
+    name: nginx-proxy-manager_nginx_proxy

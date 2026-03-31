@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xattr -l /Users/bametta/Desktop/germains-code/)",
+      "Bash(xattr -d com.apple.quarantine /Users/bametta/Desktop/germains-code/)",
+      "Bash(chmod +x /Users/bametta/Desktop/germains-code/build.sh)",
+      "Bash(npm list:*)",
+      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH\")",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/bametta/.nvm/versions/**)",
+      "Read(//Users/bametta/Library/pnpm/**)",
+      "Bash(command -v node)",
+      "Read(//Users/bametta/**)",
+      "Bash(ls /Users/bametta/Desktop/germains-code/frontend/*.png)",
+      "Bash(docker compose:*)"
+    ]
+  }
+}

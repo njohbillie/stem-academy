@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#080B14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>STEM Academy · Cameroun → USA</title>
+<link rel="icon" type="image/png" href="icon-192.png"/>
+<link rel="manifest" href="manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════ AUTH ══════════ -->
+<div id="screen-auth" class="screen active">
+<div class="auth-scroll">
+  <div class="auth-logo">
+    <span class="logo-mark">🚀</span>
+    <h1>STEM Academy</h1>
+    <p>Cameroun → USA · Bilingue · Hors-ligne</p>
+  </div>
+
+  <div class="auth-tabs" id="auth-tabs">
+    <div class="auth-tab active" onclick="setAuthTab('login')">Connexion</div>
+    <div class="auth-tab" onclick="setAuthTab('register')">Créer un compte</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login-form" style="display:flex;flex-direction:column;gap:12px">
+    <div class="input-wrap">
+      <div class="label">Email</div>
+      <input class="field" id="login-email" type="email" placeholder="ton@email.com"/>
+    </div>
+    <div class="input-wrap">
+      <div class="label">Mot de passe / Password</div>
+      <input class="field" id="login-pw" type="password" placeholder="••••••••"/>
+    </div>
+    <button class="btn btn-primary btn-full mt-10" onclick="doLogin()">🔐 Se connecter</button>
+    <div class="divider">ou</div>
+    <button class="btn btn-ghost btn-full" style="font-size:13px" onclick="demoLogin('student')">👩🏾‍🔬 Démo Élève</button>
+    <button class="btn btn-ghost btn-full" style="font-size:13px" onclick="demoLogin('parent')">👨‍👩‍👧 Démo Parent</button>
+    <button class="btn btn-ghost btn-full" style="font-size:13px" onclick="demoLogin('tutor')">👩‍🏫 Démo Tuteur</button>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="register-form" style="display:none;flex-direction:column;gap:14px">
+    <div>
+      <div class="section-title" style="margin-bottom:10px">Je suis / I am</div>
+      <div class="role-grid" id="role-grid">
+        <div class="role-card selected" data-role="student" onclick="selectRole(this)">
+          <div class="r-icon">👩🏾‍🔬</div>
+          <div class="r-name">Élève</div>
+          <div class="r-sub">Student</div>
+        </div>
+        <div class="role-card" data-role="parent" onclick="selectRole(this)">
+          <div class="r-icon">👨‍👩‍👧</div>
+          <div class="r-name">Parent</div>
+          <div class="r-sub">Guardian</div>
+        </div>
+        <div class="role-card" data-role="tutor" onclick="selectRole(this)">
+          <div class="r-icon">👩‍🏫</div>
+          <div class="r-name">Tuteur</div>
+          <div class="r-sub">Tutor</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="input-wrap" style="flex:1">
+        <div class="label">Prénom</div>
+        <input class="field" id="reg-fname" type="text" placeholder="Amina"/>
+      </div>
+      <div class="input-wrap" style="flex:1">
+        <div class="label">Nom</div>
+        <input class="field" id="reg-lname" type="text" placeholder="Feudjio"/>
+      </div>
+    </div>
+    <div class="input-wrap">
+      <div class="label">Email</div>
+      <input class="field" id="reg-email" type="email" placeholder="ton@email.com"/>
+    </div>
+    <div class="input-wrap">
+      <div class="label">Mot de passe (min. 6 caractères)</div>
+      <input class="field" id="reg-pw" type="password" placeholder="••••••••"/>
+    </div>
+
+    <!-- Student extra fields -->
+    <div id="student-extra" style="display:flex;flex-direction:column;gap:12px">
+      <div class="input-wrap">
+        <div class="label">Âge</div>
+        <input class="field" id="reg-age" type="number" value="13" min="10" max="18"/>
+      </div>
+      <div class="input-wrap">
+        <div class="label">Email parent/tuteur (pour rapports)</div>
+        <input class="field" id="reg-parent-email" type="email" placeholder="parent@email.com" value="g1.feudjio@yahoo.com"/>
+      </div>
+    </div>
+
+    <!-- Parent/tutor extra fields -->
+    <div id="guardian-extra" style="display:none;flex-direction:column;gap:12px">
+      <div class="input-wrap">
+        <div class="label">Code de l'élève (optionnel, à ajouter plus tard)</div>
+        <input class="field" id="reg-student-code" type="text" placeholder="ex: AMI-7842" maxlength="8"/>
+      </div>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="doRegister()">✨ Créer mon compte</button>
+  </div>
+
+  <div class="spacer"></div>
+</div>
+</div>
+
+<!-- ══════════ STUDENT ONBOARDING ══════════ -->
+<div id="screen-onboard" class="screen">
+<div class="auth-scroll">
+  <div style="text-align:center;padding:20px 0 24px">
+    <div style="font-size:48px;margin-bottom:8px">🌟</div>
+    <h2 style="font-size:22px">Personnalise ton profil</h2>
+    <p class="text-muted text-sm mt-10">Encore quelques détails pour démarrer ton aventure STEM!</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="input-wrap">
+      <div class="label">Ton avatar emoji</div>
+      <div id="avatar-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+        <div class="role-card selected" data-av="👩🏾‍🔬" onclick="pickAvatar(this)">👩🏾‍🔬</div>
+        <div class="role-card" data-av="👩🏾‍💻" onclick="pickAvatar(this)">👩🏾‍💻</div>
+        <div class="role-card" data-av="👩🏾‍🚀" onclick="pickAvatar(this)">👩🏾‍🚀</div>
+        <div class="role-card" data-av="👩🏾‍⚕️" onclick="pickAvatar(this)">👩🏾‍⚕️</div>
+        <div class="role-card" data-av="🦸🏾‍♀️" onclick="pickAvatar(this)">🦸🏾‍♀️</div>
+        <div class="role-card" data-av="👩🏾‍🎓" onclick="pickAvatar(this)">👩🏾‍🎓</div>
+        <div class="role-card" data-av="🔭" onclick="pickAvatar(this)">🔭</div>
+        <div class="role-card" data-av="🧬" onclick="pickAvatar(this)">🧬</div>
+        <div class="role-card" data-av="⚡" onclick="pickAvatar(this)">⚡</div>
+        <div class="role-card" data-av="🌟" onclick="pickAvatar(this)">🌟</div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <div class="label">Photo (optionnel)</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div id="photo-prev" style="width:56px;height:56px;border-radius:50%;background:var(--card2);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;cursor:pointer">📷</div>
+        <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="handlePhoto(this)"/>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('photo-file').click()">Choisir une photo</button>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <div class="label">Objectif de carrière STEM</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="career-grid">
+        <div class="role-card selected" data-career="Ingénieure / Engineer" onclick="pickCareer(this)"><span style="font-size:24px">👩🏾‍💻</span><div style="font-size:12px;font-weight:700">Ingénieure</div></div>
+        <div class="role-card" data-career="Médecin / Doctor" onclick="pickCareer(this)"><span style="font-size:24px">👩🏾‍⚕️</span><div style="font-size:12px;font-weight:700">Médecin</div></div>
+        <div class="role-card" data-career="Astronaute / Astronaut" onclick="pickCareer(this)"><span style="font-size:24px">👩🏾‍🚀</span><div style="font-size:12px;font-weight:700">Astronaute</div></div>
+        <div class="role-card" data-career="Mathématicienne" onclick="pickCareer(this)"><span style="font-size:24px">🧮</span><div style="font-size:12px;font-weight:700">Mathématicienne</div></div>
+        <div class="role-card" data-career="Biologiste / Biologist" onclick="pickCareer(this)"><span style="font-size:24px">🧬</span><div style="font-size:12px;font-weight:700">Biologiste</div></div>
+        <div class="role-card" data-career="Architecte / Architect" onclick="pickCareer(this)"><span style="font-size:24px">🏗️</span><div style="font-size:12px;font-weight:700">Architecte</div></div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <div class="label">Heure de rappel quotidien</div>
+      <input class="field" id="ob-time" type="time" value="18:00"/>
+    </div>
+
+    <div class="student-code-box">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Ton code élève (partage avec tes parents)</div>
+      <div class="code-display" id="ob-student-code">---</div>
+      <div style="font-size:11px;color:var(--muted)">Les parents entrent ce code pour suivre tes progrès</div>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="finishOnboard()">🚀 Commencer l'aventure!</button>
+  </div>
+  <div class="spacer"></div>
+</div>
+</div>
+
+<!-- ══════════ STUDENT HOME ══════════ -->
+<div id="screen-home" class="screen">
+  <div class="top-bar">
+    <div>
+      <h1>STEM Academy</h1>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:1px">
+        <div id="status-dot" class="dot-online"></div>
+        <span id="status-txt" style="font-size:10px;color:var(--muted)">En ligne</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:rgba(240,98,146,.15);border:1px solid rgba(240,98,146,.3);border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px">
+        🔥 <span id="streak-num">0</span>j
+      </div>
+      <div class="avatar-chip" id="home-av" onclick="goTo('settings')">👩🏾‍🔬</div>
+    </div>
+  </div>
+  <div class="scroll-pad">
+
+    <!-- English progress -->
+    <div class="en-progress-card aup">
+      <div class="en-level-row">
+        <div>
+          <div class="en-stage" id="en-stage-lbl">🇫🇷 Francophone</div>
+          <div style="font-size:12px;color:var(--muted)">Transition vers l'anglais</div>
+        </div>
+        <div class="en-pct" id="en-pct-num">0%</div>
+      </div>
+      <div class="en-bar-track">
+        <div class="en-bar-fill" id="en-bar" style="width:0%"></div>
+      </div>
+      <div class="en-stages">
+        <span>Débutant</span><span>Initié</span><span>Intermédiaire</span><span>Avancé</span><span>Bilingue</span>
+      </div>
+    </div>
+
+    <!-- Welcome -->
+    <div class="welcome-card aup" style="animation-delay:.05s">
+      <div class="wc-name" id="home-name">Bonjour! 👋</div>
+      <div class="wc-sub" id="home-career">Future STEM Leader 🚀</div>
+      <div class="xp-row">
+        <div class="level-chip" id="home-level">Nv.1</div>
+        <div class="xp-bar-wrap"><div class="xp-bar" id="home-xpbar" style="width:10%"></div></div>
+        <div style="font-size:11px;color:var(--muted);white-space:nowrap"><span id="home-xp">0</span> XP</div>
+      </div>
+    </div>
+
+    <!-- Daily Quest -->
+    <div class="quest-card aup" style="animation-delay:.1s">
+      <div class="quest-header">
+        <div class="quest-title">⚡ Quête du Jour</div>
+        <div class="quest-timer" id="quest-time">23h 59m</div>
+      </div>
+      <div id="quest-items"></div>
+    </div>
+
+    <!-- Subjects -->
+    <div class="aup" style="animation-delay:.15s">
+      <div class="flex-between" style="margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:0">📚 Toutes les matières</div>
+        <div class="tag tag-amber" id="us-grade-tag">8th Grade US</div>
+      </div>
+      <div class="subject-grid" id="subject-grid"></div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════ SUBJECTS LIST ══════════ -->
+<div id="screen-subjects" class="screen">
+  <div class="lesson-header">
+    <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg></div>
+    <h2 id="subj-hdr">Matière</h2>
+    <div id="subj-tag" class="tag tag-blue"></div>
+  </div>
+  <div class="scroll-pad" id="subj-chapters"></div>
+</div>
+
+<!-- ══════════ LESSON ══════════ -->
+<div id="screen-lesson" class="screen">
+  <div class="lesson-header">
+    <div class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg></div>
+    <h2 id="lesson-title" style="flex:1;font-size:15px">Leçon</h2>
+    <button id="tts-btn" onclick="speakLesson(currentLang||'fr')" title="Écouter" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;margin-right:4px">🔊</button>
+    <button id="notes-btn" onclick="openNotes(currentLesson?.key||'',currentLesson?.lesson?.title||'')" title="Mes notes" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;margin-right:8px">📝</button>
+    <div class="lang-switcher">
+      <div class="ls-btn active" id="lsb-fr" onclick="switchLang('fr')">FR</div>
+      <div class="ls-btn" id="lsb-en" onclick="switchLang('en')">EN</div>
+    </div>
+  </div>
+  <div class="lesson-scroll">
+    <div id="lesson-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <div id="en-level-banner" style="display:none" class="bilingue-block">
+      <div class="bl-fr" id="en-banner-fr"></div>
+      <div class="bl-en" id="en-banner-en"></div>
+    </div>
+    <div class="lesson-body" id="lesson-body"></div>
+    <button class="btn btn-primary btn-full" onclick="startQuiz()">✏️ Commencer le quiz</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="flex-between">
+      <div class="back-btn" onclick="goBack()" style="display:inline-flex;width:34px;height:34px;border-radius:9px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg></div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700" id="quiz-hdr">Quiz</div>
+      <div style="font-size:12px;color:var(--muted)">Q<span id="qnum">1</span>/<span id="qtot">5</span></div>
+    </div>
+    <div class="qprog-bar mt-10"><div class="qprog-fill" id="qprog" style="width:20%"></div></div>
+  </div>
+  <div class="quiz-scroll">
+    <div class="q-num-label" id="q-label">Question 1</div>
+    <div class="q-text" id="q-text">Chargement...</div>
+    <div id="q-ctx" class="q-ctx" style="display:none"></div>
+    <div class="choices" id="choices"></div>
+    <div class="explain-box" id="explain"></div>
+    <button class="btn btn-primary btn-full" id="next-btn" style="display:none" onclick="nextQ()">Suivant →</button>
+  </div>
+</div>
+
+<!-- ══════════ RESULTS ══════════ -->
+<div id="screen-results" class="screen">
+  <div class="top-bar"><h1>Résultats 🎉</h1></div>
+  <div class="results-inner">
+    <div class="score-ring apop" id="score-ring">
+      <div class="score-inner">
+        <div class="score-pct" id="res-score">0%</div>
+        <div class="score-label" id="res-label">Score</div>
+      </div>
+    </div>
+    <div style="font-size:26px;letter-spacing:6px" id="res-stars"></div>
+    <div class="adaptation-card" id="res-ada" style="width:100%">
+      <div class="ada-title">🤖 IA Adaptation</div>
+      <div id="ada-text" style="font-size:13px;line-height:1.6"></div>
+    </div>
+    <div id="en-unlock-msg" style="display:none;width:100%"></div>
+    <div class="card" style="width:100%">
+      <div class="section-title">Analyse par question</div>
+      <div id="res-breakdown"></div>
+    </div>
+    <div id="res-recommend" style="display:none;width:100%"></div>
+    <div id="res-email" style="display:none;width:100%;background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.25);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px">📧</div>
+      <div style="font-weight:700;margin-top:4px">Rapport envoyé!</div>
+      <div style="font-size:12px;color:var(--muted)" id="res-email-to"></div>
+    </div>
+    <div style="display:flex;gap:10px;width:100%">
+      <button class="btn btn-ghost" style="flex:1" onclick="goTo('home')">🏠 Accueil</button>
+      <button class="btn btn-gold" style="flex:1" onclick="retake()">🔄 Réessayer</button>
+    </div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════ PROGRESS ══════════ -->
+<div id="screen-progress" class="screen">
+  <div class="top-bar">
+    <h1>Mes Progrès</h1>
+    <button class="btn btn-jade btn-sm" onclick="sendReport()">📧 Rapport</button>
+  </div>
+  <div class="scroll-pad">
+    <div class="stats-row">
+      <div class="stat-tile"><div class="stat-num text-amber" id="st-xp">0</div><div class="stat-lbl">XP Total</div></div>
+      <div class="stat-tile"><div class="stat-num text-rose" id="st-streak">0</div><div class="stat-lbl">🔥 Streak</div></div>
+      <div class="stat-tile"><div class="stat-num text-blue" id="st-lessons">0</div><div class="stat-lbl">Leçons</div></div>
+      <div class="stat-tile"><div class="stat-num text-jade" id="st-quizzes">0</div><div class="stat-lbl">Quiz</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🇺🇸 English Journey</div>
+      <div class="en-progress-card" style="background:none;border:none;padding:0">
+        <div class="en-level-row">
+          <div><div class="en-stage" id="p-en-stage">Francophone</div><div class="text-xs text-muted">Niveau actuel</div></div>
+          <div class="en-pct" id="p-en-pct">0%</div>
+        </div>
+        <div class="en-bar-track" style="height:10px"><div class="en-bar-fill" id="p-en-bar" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px" id="p-en-next">Prochaine étape: Compléter 3 leçons d'anglais</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📈 Progrès par matière</div>
+      <div id="subj-bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🏅 Badges</div>
+      <div class="badge-grid" id="badge-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🎓 Niveau US Équivalent</div>
+      <div class="inset">
+        <div class="flex-between" style="margin-bottom:10px">
+          <div class="fw-600 text-sm">Positionnement scolaire</div>
+          <div class="tag tag-amber" id="p-us-level">8th Grade</div>
+        </div>
+        <div class="text-xs text-muted" style="line-height:1.7">Basé sur tes résultats, tu corresponds au niveau <strong>8th grade</strong> américain. Continue les matières US pour affiner ce positionnement et obtenir un rapport détaillé.</div>
+        <div class="bar-track mt-10" style="height:8px"><div class="bar-fill" id="p-us-bar" style="width:10%;background:linear-gradient(90deg,var(--amber),var(--jade))"></div></div>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════ AI TUTOR ══════════ -->
+<div id="screen-aria" class="screen">
+  <div class="tutor-bar">
+    <div class="aria-avatar">🤖</div>
+    <div style="flex:1">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700">ARIA – Tutrice IA</div>
+      <div style="font-size:11px;color:var(--muted)">Bilingue FR/EN · Hors-ligne partiel</div>
+    </div>
+    <div id="aria-status" class="dot-online"></div>
+  </div>
+  <div class="quick-row">
+    <div class="qt" onclick="quickQ('Explique les équations du 2ème degré')">📐 Équations</div>
+    <div class="qt" onclick="quickQ('Newton laws explained simply')">⚡ Newton</div>
+    <div class="qt" onclick="quickQ('How does the US grading system work?')">🇺🇸 Grades US</div>
+    <div class="qt" onclick="quickQ('Explain atoms and the periodic table')">⚛️ Atomes</div>
+    <div class="qt" onclick="quickQ('STEM career advice for a 13-year-old girl')">🚀 Carrières</div>
+    <div class="qt" onclick="quickQ('Aide-moi à comprendre la photosynthèse')">🌿 Bio</div>
+    <div class="qt" onclick="quickQ('Vocabulary for my first day at a US school')">🏫 Vocab US</div>
+    <div class="qt" onclick="quickQ('Comment gérer le stress scolaire?')">🧠 Stress</div>
+  </div>
+  <div class="chat-list" id="chat-msgs"></div>
+  <div class="chat-bottom">
+    <textarea class="chat-in" id="chat-in" rows="1" placeholder="Pose ta question... / Ask your question..." onkeydown="chatKey(event)" oninput="autoH(this)"></textarea>
+    <button class="send-btn" onclick="sendChat()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<div id="screen-settings" class="screen">
+  <div class="top-bar"><h1>Profil & Réglages</h1></div>
+  <div class="scroll-pad">
+    <!-- Profile block -->
+    <div class="card" style="display:flex;align-items:center;gap:16px;padding:20px">
+      <div id="settings-av" style="width:64px;height:64px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:30px;border:3px solid var(--amber);overflow:hidden;flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700" id="s-name">Chargement</div>
+        <div style="color:var(--muted);font-size:13px" id="s-career">Carrière STEM</div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+          <div class="tag tag-amber" id="s-level">Niveau 1</div>
+          <div class="tag tag-blue" id="s-code">Code: ---</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">📧 RAPPORTS DE PROGRÈS</div>
+    <div class="setting-group">
+      <div class="setting-row"><div><div class="sr-lbl">Email des parents</div><div class="sr-sub" id="s-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f691c7d8909383929c9f99b68f979e9999d895999b">[email&#160;protected]</a></div></div></div>
+      <div class="setting-row"><div><div class="sr-lbl">Envoi automatique</div><div class="sr-sub">Quand connectée</div></div><div class="toggle on" id="tog-email" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row" style="padding:10px 16px"><button class="btn btn-jade btn-sm btn-full" onclick="sendReport()">📧 Envoyer rapport maintenant</button></div>
+    </div>
+
+    <div class="section-title">🔔 RAPPELS</div>
+    <div class="setting-group">
+      <div class="setting-row"><div><div class="sr-lbl">Rappels d'étude</div><div class="sr-sub" id="s-time">Tous les jours à 18:00</div></div><div class="toggle on" id="tog-notifs" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+
+    <div class="section-title">🌐 LANGUE & TRANSITION</div>
+    <div class="setting-group">
+      <div class="setting-row"><div><div class="sr-lbl">Mode de langue</div><div class="sr-sub">La transition est automatique selon tes progrès</div></div><div class="tag tag-blue" id="s-lang-mode">Auto</div></div>
+      <div class="setting-row"><div><div class="sr-lbl">Text-to-speech</div><div class="sr-sub">Lecture des leçons</div></div><div class="toggle" id="tog-tts" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+
+    <div class="section-title">🤖 IA ADAPTATIVE</div>
+    <div class="setting-group">
+      <div class="setting-row"><div><div class="sr-lbl">Difficulté</div><div class="sr-sub" id="s-difficulty">Auto-adaptative</div></div><div class="tag tag-jade">Auto</div></div>
+    </div>
+
+    <button class="btn btn-ghost btn-full" style="color:var(--coral);border-color:rgba(255,107,107,.3)" onclick="doLogout()">🚪 Se déconnecter</button>
+    <div style="text-align:center;color:var(--muted);font-size:11px;padding:12px">STEM Academy v3.0 · Cameroun ✈️ USA 🌍</div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════ PARENT DASHBOARD ══════════ -->
+<div id="screen-parent" class="screen">
+  <div class="top-bar">
+    <div>
+      <h1>Tableau de bord</h1>
+      <div style="font-size:11px;color:var(--muted)" id="parent-role-label">Parent · Vue famille</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div id="parent-status" class="dot-online"></div>
+      <div class="avatar-chip" id="parent-av" onclick="doLogout()">👨‍👩‍👧</div>
+    </div>
+  </div>
+  <div class="pdash-scroll">
+
+    <!-- Parent header -->
+    <div class="pdash-header aup">
+      <div class="pdash-h-role" id="p-dash-role">Parent</div>
+      <div class="pdash-h-name" id="p-dash-name">Bonjour!</div>
+      <div class="pdash-h-sub" id="p-dash-sub">Suivez les progrès de vos élèves</div>
+
+      <div class="section-title" style="margin-top:14px;margin-bottom:8px">👩🏾‍🎓 MES ÉLÈVES</div>
+      <div class="student-selector" id="student-selector"></div>
+    </div>
+
+    <!-- Link new student -->
+    <div class="link-form aup" style="animation-delay:.05s">
+      <h3>+ Lier un élève</h3>
+      <p>Entrez le code de l'élève pour accéder à ses progrès</p>
+      <div style="display:flex;gap:8px">
+        <input class="field" id="link-code-in" placeholder="Code élève (ex: AMI-7842)" maxlength="8" style="flex:1;text-transform:uppercase"/>
+        <button class="btn btn-blue btn-sm" style="background:var(--blue);color:#fff" onclick="linkStudent()">Lier</button>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="parent-alerts"></div>
+
+    <!-- Daily report for selected student -->
+    <div id="student-report-area" style="display:none">
+      <div class="section-title">📊 RAPPORT DU JOUR – <span id="report-student-name">-</span></div>
+      <div class="report-card">
+        <div class="report-date">📅 <span id="report-date"></span></div>
+        <div class="report-stat-row">
+          <div class="rsr-cell"><div class="rsr-val text-amber" id="r-xp">0</div><div class="rsr-lbl">XP Gagné</div></div>
+          <div class="rsr-cell"><div class="rsr-val text-rose" id="r-streak">0</div><div class="rsr-lbl">🔥 Streak</div></div>
+          <div class="rsr-cell"><div class="rsr-val text-jade" id="r-avg">-</div><div class="rsr-lbl">Score Moy.</div></div>
+        </div>
+        <div class="section-title">Activité d'aujourd'hui</div>
+        <div class="activity-feed" id="activity-feed"></div>
+      </div>
+
+      <div class="section-title" style="margin-top:4px">📈 PERFORMANCES PAR MATIÈRE</div>
+      <div class="card">
+        <div class="subj-perf-list" id="subj-perf-list"></div>
+      </div>
+
+      <div class="section-title" style="margin-top:4px">🇬🇧 PROGRESSION ANGLAIS</div>
+      <div class="card">
+        <div class="flex-between" style="margin-bottom:10px">
+          <div class="text-sm fw-600" id="r-en-stage">Francophone</div>
+          <div class="tag tag-blue" id="r-en-pct">0%</div>
+        </div>
+        <div class="bar-track" style="height:8px"><div class="bar-fill" id="r-en-bar" style="width:0%;background:linear-gradient(90deg,var(--blue),var(--jade))"></div></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px" id="r-en-next">Progression en cours...</div>
+      </div>
+
+      <div class="section-title" style="margin-top:4px">⚠️ ZONES À RENFORCER</div>
+      <div id="weak-areas"></div>
+      <div id="progress-recommend" style="display:none"></div>
+
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-jade btn-full" onclick="emailReport()">📧 Envoyer par email</button>
+        <button class="btn btn-ghost" style="flex:.6" onclick="printReport()">🖨️ Rapport PDF</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-ghost btn-sm btn-full" onclick="doLogout()">🚪 Déconnexion</button>
+    </div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (student) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="goTo('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+  <button class="nav-btn" id="nav-progress" onclick="goTo('progress')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Progrès</button>
+  <button class="nav-btn" id="nav-aria" onclick="goTo('aria')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ARIA IA</button>
+  <button class="nav-btn" id="nav-vocab" onclick="goTo('vocab')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Vocab</button>
+  <button class="nav-btn" id="nav-more" onclick="toggleMoreMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>Plus</button>
+</nav>
+<!-- MORE MENU POPUP -->
+<div id="more-menu" style="display:none;position:fixed;bottom:70px;right:0;left:0;z-index:300;padding:0 12px">
+  <div style="background:rgba(17,24,39,0.98);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:8px;max-width:360px;margin:0 auto;box-shadow:0 -8px 32px rgba(0,0,0,0.4)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button onclick="toggleMoreMenu();goTo('leader')" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);color:var(--text);border-radius:10px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px">🏆<span style="font-weight:600">Classement</span></button>
+      <button onclick="toggleMoreMenu();goTo('calendar')" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);color:var(--text);border-radius:10px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px">📅<span style="font-weight:600">Planning</span></button>
+      <button onclick="toggleMoreMenu();goTo('msg')" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);color:var(--text);border-radius:10px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px">💬<span style="font-weight:600">Messages</span></button>
+      <button onclick="toggleMoreMenu();goTo('settings')" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px">⚙️<span style="font-weight:600">Réglages</span></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PLACEMENT TEST SCREEN -->
+<div class="screen" id="screen-placement">
+  <div class="screen-body" style="padding:24px;max-width:520px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:48px;margin-bottom:8px">🎯</div>
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:8px">Test de Positionnement</h2>
+      <p style="color:var(--muted);font-size:14px">15 questions rapides pour calibrer ton niveau — Maths, Sciences et Anglais.<br/>Aucune note, juste pour personnaliser ton parcours!</p>
+    </div>
+    <div id="placement-body"></div>
+    <div id="placement-nav" style="display:flex;gap:12px;margin-top:20px;justify-content:center"></div>
+  </div>
+</div>
+
+<!-- VOCAB / FLASHCARD SCREEN -->
+<div class="screen" id="screen-vocab">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <h2>🃏 Vocabulaire STEM</h2>
+    <button onclick="shuffleVocab()" style="background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px">🔀 Mélanger</button>
+  </div>
+  <div class="screen-body" style="padding:20px;max-width:460px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span id="vocab-counter" style="color:var(--muted);font-size:13px">Carte 1/120</span>
+      <span id="vocab-score" style="color:var(--accent);font-size:13px;font-weight:600">✓ 0  ✗ 0</span>
+    </div>
+    <div id="flashcard" onclick="flipCard()" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:32px;text-align:center;transition:transform 0.3s;position:relative">
+      <div id="card-side-label" style="position:absolute;top:14px;left:14px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Français</div>
+      <div id="card-text" style="font-size:24px;font-weight:700;line-height:1.3"></div>
+      <div id="card-hint" style="margin-top:12px;color:var(--muted);font-size:13px"></div>
+      <div style="position:absolute;bottom:14px;right:14px;color:var(--muted);font-size:12px">👆 Tap pour retourner</div>
+    </div>
+    <div id="card-back" style="display:none;background:rgba(99,102,241,0.1);border:1px solid var(--accent);border-radius:16px;padding:20px;margin-top:16px;text-align:center">
+      <div style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Anglais</div>
+      <div id="card-en" style="font-size:22px;font-weight:700"></div>
+      <div id="card-en-hint" style="color:var(--muted);font-size:13px;margin-top:6px"></div>
+    </div>
+    <div id="vocab-buttons" style="display:none;gap:12px;margin-top:16px;flex-direction:column">
+      <div style="display:flex;gap:12px">
+        <button onclick="vocabAnswer(false)" style="flex:1;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:12px;padding:12px;font-size:14px;cursor:pointer">✗ À revoir</button>
+        <button onclick="vocabAnswer(true)" style="flex:1;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.4);color:#34d399;border-radius:12px;padding:12px;font-size:14px;cursor:pointer">✓ Je sais!</button>
+      </div>
+      <button onclick="speakWord()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px;font-size:13px;cursor:pointer">🔊 Prononcer en anglais</button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:20px">
+      <button onclick="prevCard()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 20px;cursor:pointer">← Précédent</button>
+      <button onclick="nextCard()" style="background:var(--accent);border:none;color:#fff;border-radius:10px;padding:10px 20px;cursor:pointer">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div id="notes-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surface);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:560px;max-height:70vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="font-size:16px;font-weight:700">📝 Mes Notes — <span id="notes-lesson-title"></span></h3>
+      <button onclick="closeNotes()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    </div>
+    <textarea id="notes-textarea" placeholder="Écris tes notes ici... formules importantes, points à retenir..." style="width:100%;min-height:180px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:14px;resize:vertical;font-family:inherit"></textarea>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <button onclick="saveNotes()" style="flex:1;background:var(--accent);border:none;color:#fff;border-radius:10px;padding:10px;cursor:pointer;font-weight:600">💾 Sauvegarder</button>
+      <button onclick="clearNotes()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:10px 16px;cursor:pointer">🗑️</button>
+    </div>
+  </div>
+</div>
+
+<!-- POMODORO TIMER -->
+<div id="pomodoro-btn" style="display:none;position:fixed;bottom:80px;right:16px;z-index:200">
+  <button onclick="togglePomodoro()" id="pom-toggle" style="background:var(--accent);border:none;color:#fff;border-radius:50%;width:52px;height:52px;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,0.4)">⏱</button>
+</div>
+<div id="pomodoro-panel" style="display:none;position:fixed;bottom:144px;right:16px;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+  <div style="text-align:center">
+    <div id="pom-mode" style="font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🍅 Étude</div>
+    <div id="pom-display" style="font-size:36px;font-weight:700;font-variant-numeric:tabular-nums">25:00</div>
+    <div id="pom-session" style="color:var(--muted);font-size:12px;margin-top:4px">Session 1</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button onclick="startPomodoro()" id="pom-start" style="flex:1;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);color:#34d399;border-radius:8px;padding:6px;font-size:13px;cursor:pointer">▶ Start</button>
+    <button onclick="resetPomodoro()" style="background:var(--surface2,rgba(255,255,255,0.05));border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer">↺</button>
+  </div>
+</div>
+
+<!-- LEADERBOARD SCREEN -->
+<div class="screen" id="screen-leader">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <h2>🏆 Classement</h2>
+    <button onclick="renderLeaderboard()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">↻</button>
+  </div>
+  <div class="screen-body" style="padding:16px;max-width:520px;margin:0 auto">
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--muted)">
+      🔒 Classement anonyme — seuls les codes élèves et prénoms sont affichés.
+    </div>
+    <div id="leader-my-rank" style="margin-bottom:16px"></div>
+    <div id="leader-list"></div>
+  </div>
+</div>
+
+<!-- CALENDAR SCREEN -->
+<div class="screen" id="screen-calendar">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <h2>📅 Mon Planning</h2>
+  </div>
+  <div class="screen-body" style="padding:16px;max-width:520px;margin:0 auto">
+    <div id="cal-week-label" style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px"></div>
+    <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px"></div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--amber)">📚 Activité récente</div>
+      <div id="cal-activity"></div>
+    </div>
+    <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:14px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px">🎯 Objectif hebdomadaire</div>
+      <div id="cal-goal-bar" style="background:rgba(255,255,255,0.1);border-radius:8px;height:10px;margin-bottom:8px"><div id="cal-goal-fill" style="height:10px;background:var(--accent);border-radius:8px;transition:width .5s"></div></div>
+      <div id="cal-goal-txt" style="font-size:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TUTOR MESSAGING SCREEN -->
+<div class="screen" id="screen-msg">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <h2>💬 Messages Tuteur</h2>
+  </div>
+  <div class="screen-body" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;height:calc(100% - 56px)">
+    <div id="msg-student-info" style="background:rgba(99,102,241,0.08);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
+    <div id="msg-thread" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:14px;min-height:200px;max-height:400px"></div>
+    <div style="display:flex;gap:8px">
+      <textarea id="msg-input" placeholder="Écrire un message..." rows="2" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-size:14px;resize:none;font-family:inherit"></textarea>
+      <button onclick="sendMessage()" style="background:var(--accent);border:none;color:#fff;border-radius:10px;padding:0 16px;cursor:pointer;font-size:20px">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN ══════════ -->
+<div class="screen" id="screen-admin">
+  <div class="screen-header" style="display:flex;align-items:center;justify-content:space-between;padding:0 16px">
+    <h2>🛡️ Admin Panel</h2>
+    <button class="btn btn-ghost" style="font-size:13px;padding:6px 12px" onclick="doLogout()">Déconnexion</button>
+  </div>
+  <div class="screen-body" style="padding:16px;max-width:760px;margin:0 auto">
+
+    <!-- Stats bar -->
+    <div id="admin-stats" style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap"></div>
+
+    <!-- Tab buttons -->
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button id="admin-tab-students" class="btn btn-primary" style="font-size:13px;padding:8px 16px" onclick="adminTab('students')">👩🏾‍🔬 Élèves</button>
+      <button id="admin-tab-parents"  class="btn btn-ghost"   style="font-size:13px;padding:8px 16px" onclick="adminTab('parents')">👨‍👩‍👧 Parents</button>
+      <button id="admin-tab-tutors"   class="btn btn-ghost"   style="font-size:13px;padding:8px 16px" onclick="adminTab('tutors')">👩‍🏫 Tuteurs</button>
+    </div>
+
+    <!-- Search -->
+    <div class="input-wrap" style="margin-bottom:14px">
+      <input class="field" id="admin-search" type="text" placeholder="Rechercher par nom ou email…" oninput="adminFilter()"/>
+    </div>
+
+    <!-- Table -->
+    <div id="admin-table-wrap" style="overflow-x:auto">
+      <table id="admin-table" style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead id="admin-thead"></thead>
+        <tbody id="admin-tbody"></tbody>
+      </table>
+      <div id="admin-empty" style="display:none;text-align:center;padding:32px;color:var(--muted)">Aucun résultat</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
